@@ -2,6 +2,9 @@ var express = require("express");
 var router = express.Router();
 var sql = require("mssql");
 var conn = require("../connection/connect")();
+const schemas = require('../validations/schemas');
+const middleware = require('../validations/middleware');
+
 
 var routes = function () {
 
@@ -28,7 +31,7 @@ var routes = function () {
 
     // get project by id
     router.route('/:project_id')
-        .get(function (req, res) {
+        .get(middleware(schemas.projectID, 'params'), function (req, res) {
             var project_id = req.params.project_id;
             conn.connect().then(function () {
                 var request = new sql.Request(conn);
@@ -96,7 +99,7 @@ var routes = function () {
         }); */
 
     router.route('/')
-        .post(function (req, res) {
+        .post(middleware(schemas.projectDetails, 'body'), function (req, res) {
             conn.connect().then(function () {
                 var request = new sql.Request(conn);
                 request.input("project_name", sql.VarChar(50), req.body.project_name);

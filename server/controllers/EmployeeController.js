@@ -2,6 +2,8 @@ var express = require("express");
 var router = express.Router();
 var sql = require("mssql");
 var conn = require("../connection/connect")();
+const schemas = require('../validations/schemas');
+const middleware = require('../validations/middleware');
 
 var routes = function () {
 
@@ -29,7 +31,7 @@ var routes = function () {
 
     // get employee by id
     router.route('/:employee_uuid')
-        .get(function (req, res) {
+        .get(middleware(schemas.employeeUUID, 'params'), function (req, res) {
             var employee_uuid = req.params.employee_uuid;
             conn.connect().then(function () {
                 var request = new sql.Request(conn);
@@ -58,7 +60,7 @@ var routes = function () {
 
     // get employees by project
     router.route('/viewModal/:project_id')
-        .get(function (req, res) {
+        .get(middleware(schemas.projectID, 'params'), function (req, res) {
             var project_id = req.params.project_id;
             conn.connect().then(function () {
                 var request = new sql.Request(conn);
@@ -82,7 +84,7 @@ var routes = function () {
 
     // insert employee
     router.route('/')
-        .post(function (req, res) {
+        .post(middleware(schemas.employeeDetails, 'body'), function (req, res) {
             conn.connect().then(function () {
                 var request = new sql.Request(conn);
                 request.input("employee_name", sql.VarChar(200), req.body.employee_name)
@@ -106,7 +108,7 @@ var routes = function () {
 
     // update employee
     router.route('/:employee_uuid')
-        .put(function (req, res) {
+        .put(middleware(schemas.employeeUUID, 'params'), middleware(schemas.employeeDetails, 'body'), function (req, res) {
             var employee_uuid = req.params.employee_uuid;
             conn.connect().then(function () {
                 var request = new sql.Request(conn);
@@ -134,7 +136,7 @@ var routes = function () {
 
     // delete employee
     router.route('/:employee_uuid')
-        .delete(function (req, res) {
+        .delete(middleware(schemas.employeeUUID, 'params'), function (req, res) {
             var employee_uuid = req.params.employee_uuid;
             conn.connect().then(function () {
                 var request = new sql.Request(conn);
@@ -154,98 +156,6 @@ var routes = function () {
                 res.status(400).send(err);
             });
         });
-
-    // procedure for inserting an employee
-    /* CREATE procedure[dbo].[InsertEmployee]
-    (  
-        @employee_name varchar(100),  
-        @email varchar(200),
-        @project varchar(50)
-    )
-    AS
-    BEGIN  
-    insert into employees(employee_name, email, project, isActiveEmployee) values(@employee_name, @email, @project, 1)
-    END */
-
-    /* router.route('/')
-        .post(function (req, res) {
-            conn.connect().then(function () {
-                var transaction = new sql.Transaction(conn);
-                transaction.begin().then(function () {
-                    var request = new sql.Request(transaction);
-                    request.input("employee_name", sql.VarChar(100), req.body.employee_name)
-                    request.input("email", sql.VarChar(200), req.body.email)
-                    request.input("project", sql.VarChar(50), req.body.project)
-                    request.execute("InsertEmployee").then(function () {
-                        transaction.commit().then(function (recordSet) {
-                            conn.close();
-                            res.status(200).send(req.body);
-                        }).catch(function (err) {
-                            console.log(err)
-                            conn.close();
-                            res.status(400).send(err);
-                        });
-                    }).catch(function (err) {
-                        console.log(err)
-                        conn.close();
-                        res.status(400).send(err);
-                    });
-                }).catch(function (err) {
-                    console.log(err)
-                    conn.close();
-                    res.status(400).send(err);
-                });
-            }).catch(function (err) {
-                console.log(err)
-                conn.close();
-                res.status(400).send(err);
-            });
-        }); */
-
-    // procedure for deleting an employee
-    /* create procedure [dbo].[DeleteEmployee]
-    @uui uniqueidentifier
-    as
-    begin
-    update employees
-    set isActiveEmployee = 0
-    where uuid = @uuid
-    end */
-
-    // delete a product
-/*     router.route('/:uuid')
-        .delete(function (req, res) {
-            var _employeeuuid = req.params.uuid;
-            conn.connect().then(function () {
-                var transaction = new sql.Transaction(conn);
-                transaction.begin().then(function () {
-                    var request = new sql.Request(transaction);
-                    request.input("uuid", sql.UniqueIdentifier, _employeeuuid)
-                    request.execute("DeleteEmployee").then(function () {
-                        transaction.commit().then(function (recordSet) {
-                            conn.close();
-                            res.status(200).send(req.body);
-                        }).catch(function (err) {
-                            console.log(err)
-                            conn.close();
-                            res.status(400).send(err);
-                        });
-                    }).catch(function (err) {
-                        console.log(err)
-                        conn.close();
-                        res.status(400).send(err);
-                    });
-                }).catch(function (err) {
-                    console.log(err)
-                    conn.close();
-                    res.status(400).send(err);
-                });
-            }).catch(function (err) {
-                console.log(err)
-                conn.close();
-                res.status(400).send(err);
-            });
-        }); */
 
     return router
 }
