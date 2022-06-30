@@ -1,8 +1,15 @@
 <template>
+<<<<<<< HEAD
   <v-dialog v-model="dialog" @keydown.esc="close" max-width="600" >
     <v-card>
       <v-toolbar dark color="grey lighten-2" flat>
         <v-toolbar-title class="black--text" >
+=======
+  <v-dialog v-model="dialog" @keydown.esc="close" max-width="600" style="{ zIndex: 200 }">
+    <v-card>
+      <v-toolbar dark color="grey lighten-2" dense flat>
+        <v-toolbar-title class="black--text">
+>>>>>>> 006d36e4e922ffe08516319dcf7f9c20df57dfc4
           <h3>View Project</h3>
         </v-toolbar-title>
       </v-toolbar>
@@ -131,6 +138,15 @@ export default {
       id: '',
       project: null,
       employees: [],
+<<<<<<< HEAD
+=======
+      options: {
+        color: "grey lighten-3",
+        width: 400,
+        zIndex: 200,
+        noconfirm: false,
+      },
+>>>>>>> 006d36e4e922ffe08516319dcf7f9c20df57dfc4
     };
   },
 
@@ -160,7 +176,11 @@ export default {
         .then((response) => {
           this.project = response.data;
           // console.log(id)
+<<<<<<< HEAD
           // console.log(this.project)
+=======
+          console.log(this.project)
+>>>>>>> 006d36e4e922ffe08516319dcf7f9c20df57dfc4
         })
         .catch((e) => {
           console.log(e);
