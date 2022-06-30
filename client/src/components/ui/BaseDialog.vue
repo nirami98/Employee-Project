@@ -1,4 +1,50 @@
 <template>
+  <v-dialog v-model="dialog" @keydown.esc="close" max-width="600" style="{ zIndex: 200 }">
+    <v-card>
+      <v-toolbar dark color="grey lighten-2" dense flat>
+        <v-toolbar-title class="black--text">
+          <h3>View Project</h3>
+        </v-toolbar-title>
+      </v-toolbar>
+
+      <div v-if="project">
+        <v-card-text class="pa-4">
+          <label for="name">
+            <strong>Name: </strong>
+            {{project[0].project_name}}
+          </label>
+          
+          <br><br>
+
+          <label for="technology">
+            <strong>Technology: </strong>
+            {{project[0].technology}}
+          </label>
+
+          <br><br>
+
+          <label for="employees">
+            <strong>Employees: </strong>
+            <ul type="none">
+              <li v-for="(employee, index) in employees" :key="index">
+                {{employee.employee_name}}
+              </li>
+            </ul>
+          </label>
+        </v-card-text>
+      </div>
+
+      <v-card-actions class="pt-0">
+        <v-spacer></v-spacer>
+        <v-btn color="primary darken-4" @click.native="close">
+          Close
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+</template>
+
+<!-- <template>
   <teleport to="body">
     <div @click="$emit('close')" class="backdrop"></div>
     <transition name="dialog">
@@ -28,38 +74,98 @@
       </dialog>
     </transition>
   </teleport>
-</template>
+</template> -->
+
+<!-- <template>
+  <div class="text-center">
+    <v-dialog
+      v-model="dialog"
+      width="500"
+    >
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          color="red lighten-2"
+          dark
+          v-bind="attrs"
+          v-on="on"
+        >
+          Click Me
+        </v-btn>
+      </template>
+
+      <v-card>
+        <v-card-title class="text-h5 grey lighten-2">
+          Privacy Policy
+        </v-card-title>
+
+        <v-card-text>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="primary"
+            text
+            @click="dialog = false"
+          >
+            I accept
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </div>
+</template> -->
 
 <script>
 import ProjectsDataService from '../../services/ProjectsDataService';
 import EmployeesDataService from '../../services/EmployeesDataService';
 
 export default {
+  name: "BaseDialog",
   data() {
     return {
-      id: this.$props.project_id,
+      dialog: false,
+      id: '',
       project: null,
-      employees: []
+      employees: [],
+      options: {
+        color: "grey lighten-3",
+        width: 400,
+        zIndex: 200,
+        noconfirm: false,
+      },
     };
   },
 
-  props: {
-    title: {
-      type: String,
-      required: false,
-    },
-    project_id: {
-      type: Number,
-      required: true
-    }
-  },
-  emits: ['close'],
+  // props: {
+  //   title: {
+  //     type: String,
+  //     required: false,
+  //   },
+  //   project_id: {
+  //     type: Number,
+  //     required: true
+  //   }
+  // },
   methods: {
+    open(project_id) {
+      this.dialog = true;
+      this.id = project_id;
+      // console.log(project_id)
+      this.getProject(this.id);
+      this.getEmployeesByProject(this.id)
+    },
+    close() {
+      this.dialog = false;
+    },
     getProject(id) {
       ProjectsDataService.getProjectById(id)
         .then((response) => {
           this.project = response.data;
-          console.log(id)
+          // console.log(id)
           console.log(this.project)
         })
         .catch((e) => {
@@ -75,8 +181,8 @@ export default {
     }
   },
   mounted() {
-    this.getProject(this.id);
-    this.getEmployeesByProject(this.id)
+    // this.getProject(this.id);
+    // this.getEmployeesByProject(this.id)
   },
 };
 </script>

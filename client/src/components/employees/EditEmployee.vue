@@ -1,14 +1,24 @@
 <template>
   <div class="submit-form">
-    <div v-if="employee">
+    <form @submit.prevent="handleSubmit">
+    <div v-if="employee && project">
       <div class="form-group">
         <label for="name">Name: </label>
-        <input type="text" class="form-control" id="name" required v-model="employee[0].employee_name" name="name" />
+        <input type="text" class="form-control" id="name" required v-model="employee[0].employee_name" name="name" :class="{ 'is-invalid': isSubmitted && $v.employee_name.$error }" />
+        <div v-if="isSubmitted && !$v.employee_name.required" class="invalid-feedback">
+          Name field is required
+        </div>
       </div>
+
       <div class="form-group">
         <label for="email">Email: </label>
-        <input type="email" class="form-control" required v-model="employee[0].email" />
+        <input type="email" class="form-control" required v-model="employee[0].email" :class="{ 'is-invalid': isSubmitted && $v.email.$error }" />
+        <div v-if="isSubmitted && $v.email.$error" class="invalid-feedback">
+          <span v-if="!$v.email.required">Email field is required</span>
+          <span v-if="!$v.email.email">Please provide valid email</span>
+        </div>
       </div>
+      
       <div class="form-group">
         <label for="project">Project: </label>
         <select name="technology" id="technology" @change="changeProject($event)" class="form-control">
@@ -18,22 +28,18 @@
           </option>
         </select>
       </div>
-      <button @click="updateEmployee" class="mt-3 btn btn-success">Update</button>
-      <p>{{message}}</p>
-    </div>
-    <div v-else>
-      <h4>Please select an employee to edit.</h4>
-      <!-- add Toaster -->
-      <!-- <button class="m-3 btn btn-success" @click="newEmployee">
-        Edit employee
-      </button> -->
-    </div>
+      
+      <button class="mt-3 btn btn-success">Update</button>
   </div>
+    </form>
+    </div>
 </template>
 
 <script>
 import EmployeesDataService from "../../services/EmployeesDataService";
 import ProjectsDataService from "@/services/ProjectsDataService";
+
+import { required, email } from "vuelidate/lib/validators";
 
 export default {
   data() {
@@ -42,10 +48,30 @@ export default {
       project: null,
       projects: [],
       selectedProject: null,
-      message: '',
+      isSubmitted: false
     };
   },
+
+  validations: {
+    employee_name: { required },
+      email: { required, email }
+    // employees: {
+      
+    // }
+  },
+
   methods: {
+    handleSubmit() {
+      this.isSubmitted = true;
+
+      this.$v.$touch();
+      if (this.$v.$invalid) {
+        return;
+      }
+
+      this.updateEmployee();
+    },
+
     getEmployee(employee_uuid) {
       EmployeesDataService.getEmployeeById(employee_uuid)
         .then((response) => {
@@ -89,11 +115,13 @@ export default {
       EmployeesDataService.updateEmployee(this.employee[0].employee_uuid, this.employee[0])
         .then((response) => {
           console.log(response.data);
+          this.isSubmitted = true;
           this.message = "The employee was updated successfully!";
           this.getEmployee(this.employee[0].employee_uuid)
           this.$toasted.show("Employee updated successfully!", {
             className: ["toast-success"]
           })
+          this.$router.push("/");
         })
         .catch((e) => {
           console.log(e);

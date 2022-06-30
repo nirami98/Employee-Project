@@ -33,6 +33,11 @@ export default new Router({
       path: "/edit-employees/:employee_uuid",
       name: "editEmployees",
       component: () => import("./components/employees/EditEmployee.vue")
+    },
+    {
+      path: "/page",
+      name: "page",
+      component: () => import("./components/employees/Page.vue")
     }
   ]
 });

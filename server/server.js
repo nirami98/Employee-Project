@@ -3,6 +3,7 @@ const cors = require("cors");
 const app = express();
 const port = process.env.port || 8080;
 
+
 var corsOptions = {
     origin: "http://localhost:8081"
 }
@@ -32,7 +33,7 @@ app.use("/api/projects", projectController)
 
 app.listen(port, function () {
     const datetime = new Date();
-    const message = "Server running on Port:- " + port + "Started at :- " + datetime;
+    const message = "Server running on Port:- " + port + "\nStarted at :- " + datetime;
     console.log(message);
 });
 
