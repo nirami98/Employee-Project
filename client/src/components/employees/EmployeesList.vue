@@ -7,8 +7,6 @@
           Add User
         </button>
       </router-link>
-      <!-- <div> <ToastNotification/></div> -->
-
 
       <table class="table table-bordered">
         <thead class="thead-dark">
@@ -35,13 +33,9 @@
                 Edit
               </a>
               </router-link>
-              
+              &nbsp;
               <a type="button" class="btn btn-light btn-small" @click="deleteEmployee(employee.employee_uuid)"><i class="bi bi-person-x"></i> Delete</a>
               
-              <!-- <a href="/viewuser/{{this.id}}" type="button" class="btn btn-light btn-small"><i class="bi bi-eye"></i> View</a>
-              <a href="/edituser/{{this.id}}" type="button" class="btn btn-light btn-small"><i class="bi bi-pencil"></i>
-                Edit</a>
-              <a href="/{{this.id}}" type="button" class="btn btn-light btn-small"><i class="bi bi-person-x"></i> Delete</a> -->
             </td>
           </tr>
         </tbody>
@@ -52,13 +46,8 @@
 
 <script>
 import EmployeesDataService from "../../services/EmployeesDataService";
-// import ProjectsDataService from "../../services/ProjectsDataService";
-// import ToastNotification from "../ui/ToastNotification.vue"
 
 export default {
-  components: {
-      // ToastNotification
-  },
   data() {
     return {
       employees: []

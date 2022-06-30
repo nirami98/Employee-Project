@@ -1,36 +1,37 @@
 <template>
   <div class="submit-form">
-    <div v-if="!submitted">
+    <form @submit.prevent="handleSubmit">
+
       <div class="form-group">
         <label for="name">Project Name: </label>
-        <input type="text" class="form-control" id="name" required v-model="projects.project_name" name="name" />
+        <input type="text" class="form-control" id="name" required v-model="projects.project_name" name="name" :class="{ 'is-invalid': isSubmitted && $v.projects.project_name.$error }" />
+        <div v-if="isSubmitted && !$v.projects.project_name.required" class="invalid-feedback" >
+          Name field is required
+        </div>
       </div>
+
       <div class="form-group">
         <label for="technology">Technology: </label>
-        <select name="technology" id="technology" @change="changeTechnology($event)" class="form-control" >
+        <select name="technology" id="technology" @change="changeTechnology($event)" class="form-control" :class="{ 'is-invalid': isSubmitted && $v.projects.technology.$error }" >
           <option value="" selected disabled>Please Select</option>
           <option v-for="technology in technologies" :value="technology.value" :key="technology.value" >
             {{ technology.name }}
           </option>
         </select>
+        <div v-if="isSubmitted && !$v.projects.technology.required" class="invalid-feedback">
+          Technology is required
+        </div>
       </div>
-      <button @click="saveProject" class="mt-3 btn btn-success">Submit</button>
-    </div>
-    <div v-else>
-      <button class="m-3 btn btn-success" @click="newProject">
-        Add Project
-      </button>
-      <router-link to="/projects-list">
-        <button class="m-3 btn btn-md btn-primary">
-          Projects
-        </button>
-      </router-link>
-    </div>
+
+      <button class="mt-3 btn btn-success">Submit</button>
+    </form>
   </div>
 </template>
 
 <script>
 import ProjectsDataService from "../../services/ProjectsDataService";
+
+import { required } from "vuelidate/lib/validators";
 
 export default {
   data() {
@@ -45,11 +46,29 @@ export default {
         { value: "java", name: "Java" },
         { value: "dotnet", name: ".Net" },
       ],
-      submitted: false,
+      isSubmitted: false,
       selectedTechnology: null,
     };
   },
+
+  validations: {
+    projects: {
+      project_name: { required },
+      technology: { required }
+    }
+  },
+
   methods: {
+    handleSubmit() {
+      this.isSubmitted = true;
+
+      this.$v.$touch();
+      if (this.$v.$invalid) {
+        return;
+      }
+
+      this.saveProject();
+    },
     saveProject() {
       var data = {
         project_name: this.projects.project_name,
@@ -60,10 +79,11 @@ export default {
         .then((response) => {
           this.projects.id = response.data.id;
           console.log(response.data);
-          this.submitted = true;
+          this.isSubmitted = true;
           this.$toasted.show("Project added successfully!", {
             className: ["toast-success"]
           })
+          this.$router.push("/projects-list");
         })
         .catch((e) => {
           console.log(e);
@@ -81,7 +101,7 @@ export default {
       // console.log("data=" + this.selectedTechnology);
     },
     newProject() {
-      this.submitted = false;
+      this.isSubmitted = false;
       this.projects = {};
     },
   },

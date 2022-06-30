@@ -1,133 +1,253 @@
-<template>
+<!-- <template>
   <div class="submit-form">
-    <div v-if="!submitted">
-      <div class="form-group">
-        <label for="name">Name: </label>
-        <input
-          type="text"
-          class="form-control"
-          id="name"
-          required
-          v-model="employee.employee_name"
-          name="name"
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="email">Email: </label>
-        <input
-          type="email"
-          class="form-control"
-          required
-          v-model="employee.email"
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="project">Project: </label>
-        <select
-          name="technology"
-          id="technology"
-          @change="changeProject($event)"
-          class="form-control"
-        >
-          <option value="" selected disabled>Please Select</option>
-          <option
-            v-for="project in projects"
-            :value="project.project_id"
-            :key="project.project_id"
+    <form @submit.prevent="handleSubmit">
+        <div class="form-group">
+          <label for="name">Name: </label>
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            required
+            v-model="employee.employee_name"
+            name="name"
+            :class="{
+              'is-invalid': isSubmitted && $v.employee.employee_name.$error,
+            }"
+          />
+          <div
+            v-if="isSubmitted && !$v.employee.employee_name.required"
+            class="invalid-feedback"
           >
-            {{ project.project_name }}
-          </option>
-        </select>
-      </div>
+            Name field is required
+          </div>
+        </div>
 
-      <button @click="saveEmployee" class="mt-3 btn btn-success">Submit</button>
-    </div>
-    <div v-else>
-      <button class="m-3 btn btn-success" @click="newEmployee">
-        Add employee
-      </button>
-      <router-link to="/">
-        <button class="m-3 btn btn-md btn-primary">
-          Home
-        </button>
-      </router-link>
-    </div>
-    <!-- <div> <ToastNotification/></div> -->
+        <div class="form-group">
+          <label for="email">Email: </label>
+          <input
+            type="email"
+            class="form-control"
+            required
+            v-model="employee.email"
+            :class="{ 'is-invalid': isSubmitted && $v.employee.email.$error }"
+          />
+          <div
+            v-if="isSubmitted && $v.employee.email.$error"
+            class="invalid-feedback"
+          >
+            <span v-if="!$v.employee.email.required"
+              >Email field is required</span
+            >
+            <span v-if="!$v.employee.email.email"
+              >Please provide valid email</span
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="project">Project: </label>
+          <select
+            name="technology"
+            id="technology"
+            @change="changeProject($event)"
+            class="form-control"
+          >
+            <option value="" selected disabled>Please Select</option>
+            <option
+              v-for="project in projects"
+              :value="project.project_id"
+              :key="project.project_id"
+            >
+              {{ project.project_name }}
+            </option>
+          </select>
+        </div>
+        <button class="mt-3 btn btn-success">Submit</button>
+    </form>
+  </div>
+</template> -->
+
+<template>
+<div v-if="projects">
+  <v-app>
+    <v-form ref="form" v-model="valid" lazy-validation>
+      <v-text-field 
+        v-model="employee_name" 
+        :rules="nameRules" 
+        label="Name" 
+        id="name"
+        required>
+      </v-text-field>
+
+      <v-text-field 
+        v-model="email" 
+        :rules="emailRules" 
+        label="E-mail" 
+        id="email"
+        required>
+      </v-text-field>
+
+      <v-select 
+        v-model="select" 
+        :items="projects"
+        item-text="project_name"
+        :rules="[v => !!v || 'Project is required']" label="Projects" 
+        return-object
+        required>
+      </v-select>
+
+      <v-btn :disabled="!valid" color="success" class="mr-4" @click="validate">
+        Submit
+      </v-btn>
+
+      <v-btn color="error" class="mr-4" @click="reset">
+        Reset Form
+      </v-btn>
+
+      <v-btn color="warning" @click="resetValidation">
+        Reset Validation
+      </v-btn>
+    </v-form>
+  </v-app>
   </div>
 </template>
 
 <script>
 import EmployeesDataService from "../../services/EmployeesDataService";
 import ProjectsDataService from "../../services/ProjectsDataService";
-// import ToastNotification from "../ui/ToastNotification.vue"
 
+// import { required, email } from "vuelidate/lib/validators";
 
 export default {
-  components: {
-    // ToastNotification
-  },
   data() {
     return {
-      employee: {
+      /* employee: {
         id: null,
         employee_name: "",
         email: "",
-        project_id: null,
-      },
+        project_id: "",
+      }, */
+      // isSubmitted: false,
+
       projects: [],
-      submitted: false,
-      selectedProject: null,
+      // selectedProject: null,
+      valid: true,
+      id: null,
+
+      employee_name: '',
+      nameRules: [
+        v => !!v || 'Name is required'
+      ],
+
+      email: '',
+      emailRules: [
+        v => !!v || 'E-mail is required',
+        v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
+      ],
+
+      select: null,
     };
   },
+
+  /* validations: {
+    employee: {
+      employee_name: {
+        required,
+      },
+      email: {
+        required,
+        email,
+      },
+      project_id: {
+        required,
+      },
+    },
+  }, */
+
   methods: {
+    validate () {
+        // this.$refs.form.validate()
+        if(this.$refs.form.validate()) {
+          this.saveEmployee()
+        } 
+      },
+      reset () {
+        this.$refs.form.reset()
+      },
+      resetValidation () {
+        this.$refs.form.resetValidation()
+      },
+
+      showData() {
+        console.log("name => " + this.employee_name)
+        console.log("email => " + this.email)
+        console.log("selected project id => " + this.select.project_id)
+        console.log("selected project name => " + this.select.project_name)
+      },
+    /* handleSubmit() {
+      this.isSubmitted = true;
+
+      this.$v.$touch();
+      if (this.$v.$invalid) {
+        return;
+      }
+
+      this.saveEmployee();
+    }, */
     saveEmployee() {
       var data = {
-        employee_name: this.employee.employee_name,
-        email: this.employee.email,
-        project_id: this.selectedProject,
+        employee_name: this.employee_name,
+        email: this.email,
+        project_id: this.select.project_id
+        // employee_name: this.employee.employee_name,
+        // email: this.employee.email,
+        // project_id: this.selectedProject,
       };
       EmployeesDataService.createEmployee(data)
         .then((response) => {
-          this.employee.id = response.data.id;
+          this.id = response.data.id;
           console.log(response.data);
-          this.submitted = true;
+          this.isSubmitted = true;
           this.$toasted.show("Employee added successfully!", {
-            className: ["toast-success"]
-          })
+            className: ["toast-success"],
+          });
+          this.reset();
+          this.$router.push("/");
         })
         .catch((e) => {
           console.log(e);
           this.$toasted.show("Error while adding employee!", {
-            className: ["toast-error"]
-          })
+            className: ["toast-error"],
+          });
         });
     },
-    changeProject(event) {
-      // this.employee.project = event.target.value;
-      // this.employee.project_id = event.target.key;
-      this.selectedProject = event.target.value;
-      // this.selectedProject = event.target.options[event.target.options.selectedIndex].text;
 
-      // console.log("value=" + this.project.technology);
-      // console.log("data=" + this.selectedTechnology);
+   /*  changeProject(event) {
+      this.employee.project = event.target.value;
+      this.employee.project_id = event.target.key;
+      this.selectedProject = event.target.value;
+      this.selectedProject = event.target.options[event.target.options.selectedIndex].text;
+
+      console.log("value=" + this.project.technology);
+      console.log("data=" + this.selectedTechnology);
     },
+
     newEmployee() {
       this.submitted = false;
       this.employee = {};
     },
+ */
     retrieveProjects() {
       ProjectsDataService.getAllProjects()
         .then((response) => {
           this.projects = response.data;
-          console.log(response.data);
         })
         .catch((e) => {
           console.log(e);
         });
     },
   },
+
   mounted() {
     this.retrieveProjects();
   },
@@ -140,14 +260,14 @@ export default {
   margin: auto;
 }
 
-.toast-success{
+.toast-success {
   background-color: lightgreen !important;
   border: 1px;
   border-color: darkgreen !important;
   color: darkgreen !important;
 }
 
-.toast-error{
+.toast-error {
   background-color: lightcoral !important;
   border: 1px;
   border-color: darkred !important;
