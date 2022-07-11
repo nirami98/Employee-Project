@@ -4,7 +4,9 @@ const schemas = {
     employeeDetails: Joi.object().keys({
         employee_name: Joi.string().required(),
         email: Joi.string().email().required(),
-        project_id: Joi.number().required()
+        project_id: Joi.number().required(),
+        phone_number: Joi.string().length(10).regex(/^[0-9]+$/).required(),
+        password: Joi.string().min(8).required()
     }),
 
     employeeUUID: {
@@ -23,6 +25,11 @@ const schemas = {
     projectDetails: Joi.object().keys({
         project_name: Joi.string().required(),
         technology: Joi.string().required(),
+    }),
+
+    employeeLogin: Joi.object().keys({
+        email: Joi.string().email().required(),
+        password: Joi.string().min(8).required()
     }),
 };
 

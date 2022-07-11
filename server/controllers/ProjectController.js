@@ -30,8 +30,9 @@ var routes = function () {
         });
 
     // get project by id
+    // .get(middleware(schemas.projectID, 'params'), function (req, res) {
     router.route('/:project_id')
-        .get(middleware(schemas.projectID, 'params'), function (req, res) {
+        .get(middleware({ 'params': schemas.projectID }), function (req, res) {
             var project_id = req.params.project_id;
             conn.connect().then(function () {
                 var request = new sql.Request(conn);
@@ -98,8 +99,9 @@ var routes = function () {
             });
         }); */
 
+    // .post(middleware(schemas.projectDetails, 'body'), function (req, res) {
     router.route('/')
-        .post(middleware(schemas.projectDetails, 'body'), function (req, res) {
+        .post(middleware({'body': schemas.projectDetails}), function (req, res) {
             conn.connect().then(function () {
                 var request = new sql.Request(conn);
                 request.input("project_name", sql.VarChar(50), req.body.project_name);

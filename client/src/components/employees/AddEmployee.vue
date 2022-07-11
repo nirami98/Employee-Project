@@ -17,7 +17,6 @@
           <div
             v-if="isSubmitted && !$v.employee.employee_name.required"
             class="invalid-feedback"
-<<<<<<< HEAD
           >
             Name field is required
           </div>
@@ -53,43 +52,6 @@
             @change="changeProject($event)"
             class="form-control"
           >
-=======
-          >
-            Name field is required
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="email">Email: </label>
-          <input
-            type="email"
-            class="form-control"
-            required
-            v-model="employee.email"
-            :class="{ 'is-invalid': isSubmitted && $v.employee.email.$error }"
-          />
-          <div
-            v-if="isSubmitted && $v.employee.email.$error"
-            class="invalid-feedback"
-          >
-            <span v-if="!$v.employee.email.required"
-              >Email field is required</span
-            >
-            <span v-if="!$v.employee.email.email"
-              >Please provide valid email</span
-            >
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="project">Project: </label>
-          <select
-            name="technology"
-            id="technology"
-            @change="changeProject($event)"
-            class="form-control"
-          >
->>>>>>> 006d36e4e922ffe08516319dcf7f9c20df57dfc4
             <option value="" selected disabled>Please Select</option>
             <option
               v-for="project in projects"
@@ -102,7 +64,6 @@
         </div>
         <button class="mt-3 btn btn-success">Submit</button>
     </form>
-<<<<<<< HEAD
   </div>
 </template> -->
 
@@ -148,8 +109,6 @@
       </v-btn>
     </v-form>
   </v-app>
-=======
->>>>>>> 006d36e4e922ffe08516319dcf7f9c20df57dfc4
   </div>
 </template>
 
@@ -157,11 +116,7 @@
 import EmployeesDataService from "../../services/EmployeesDataService";
 import ProjectsDataService from "../../services/ProjectsDataService";
 
-<<<<<<< HEAD
 // import { required, email } from "vuelidate/lib/validators";
-=======
-import { required, email } from "vuelidate/lib/validators";
->>>>>>> 006d36e4e922ffe08516319dcf7f9c20df57dfc4
 
 export default {
   data() {
@@ -171,7 +126,6 @@ export default {
         employee_name: "",
         email: "",
         project_id: "",
-<<<<<<< HEAD
       }, */
       // isSubmitted: false,
 
@@ -196,16 +150,6 @@ export default {
   },
 
   /* validations: {
-=======
-      },
-      projects: [],
-      isSubmitted: false,
-      selectedProject: null,
-    };
-  },
-
-  validations: {
->>>>>>> 006d36e4e922ffe08516319dcf7f9c20df57dfc4
     employee: {
       employee_name: {
         required,
@@ -218,7 +162,6 @@ export default {
         required,
       },
     },
-<<<<<<< HEAD
   }, */
 
   methods: {
@@ -242,12 +185,6 @@ export default {
         console.log("selected project name => " + this.select.project_name)
       },
     /* handleSubmit() {
-=======
-  },
-
-  methods: {
-    handleSubmit() {
->>>>>>> 006d36e4e922ffe08516319dcf7f9c20df57dfc4
       this.isSubmitted = true;
 
       this.$v.$touch();
@@ -256,11 +193,7 @@ export default {
       }
 
       this.saveEmployee();
-<<<<<<< HEAD
     }, */
-=======
-    },
->>>>>>> 006d36e4e922ffe08516319dcf7f9c20df57dfc4
     saveEmployee() {
       var data = {
         employee_name: this.employee_name,
@@ -278,10 +211,7 @@ export default {
           this.$toasted.show("Employee added successfully!", {
             className: ["toast-success"],
           });
-<<<<<<< HEAD
           this.reset();
-=======
->>>>>>> 006d36e4e922ffe08516319dcf7f9c20df57dfc4
           this.$router.push("/");
         })
         .catch((e) => {
@@ -292,15 +222,9 @@ export default {
         });
     },
 
-<<<<<<< HEAD
    /*  changeProject(event) {
       this.employee.project = event.target.value;
       this.employee.project_id = event.target.key;
-=======
-    changeProject(event) {
-      // this.employee.project = event.target.value;
-      // this.employee.project_id = event.target.key;
->>>>>>> 006d36e4e922ffe08516319dcf7f9c20df57dfc4
       this.selectedProject = event.target.value;
       this.selectedProject = event.target.options[event.target.options.selectedIndex].text;
 
@@ -312,11 +236,7 @@ export default {
       this.submitted = false;
       this.employee = {};
     },
-<<<<<<< HEAD
  */
-=======
-
->>>>>>> 006d36e4e922ffe08516319dcf7f9c20df57dfc4
     retrieveProjects() {
       ProjectsDataService.getAllProjects()
         .then((response) => {

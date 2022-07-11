@@ -35,9 +35,14 @@ export default new Router({
       component: () => import("./components/employees/EditEmployee.vue")
     },
     {
-      path: "/page",
-      name: "page",
-      component: () => import("./components/employees/Page.vue")
-    }
+      path: "/login",
+      name: "login",
+      component: () => import("./components/auth/Login.vue")
+    },
+    {
+      path: "/signup",
+      name: "signup",
+      component: () => import("./components/auth/SignUp.vue")
+    },
   ]
 });

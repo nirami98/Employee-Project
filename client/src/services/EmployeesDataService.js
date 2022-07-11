@@ -24,6 +24,10 @@ class EmployeesDataService {
     getEmployeesByProject(project_id) {
         return http.get(`/employees/viewModal/${project_id}`)
     }
+
+    login(credentials) {
+        return http.post("/login", credentials)
+    }
 }
 
 export default new EmployeesDataService()

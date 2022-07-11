@@ -22,9 +22,12 @@ app.use(function(req, res, next) {
 
 const employeeController = require('./controllers/EmployeeController')();
 const projectController = require('./controllers/ProjectController')();
+const loginController = require('./controllers/LoginController')();
+
 
 app.use("/api/employees", employeeController)
 app.use("/api/projects", projectController)
+app.use("/api/login", loginController)
 
 // app.get("/product",function(request,response)
 // {
